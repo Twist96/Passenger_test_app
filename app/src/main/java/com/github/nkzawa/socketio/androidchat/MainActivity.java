@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mSocket = app.getSocket();
         mSocket.on(Socket.EVENT_CONNECT,onConnect);
         mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
-        mSocket.on("driver_accept_request", driverAcceptRequest);
+        mSocket.on("request-channel", driverAcceptRequest);
     }
 
     @Override
@@ -58,11 +58,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void searchForDriver(View view){
-        progressDialog.setMessage("Searching for a near by driver");
-        progressDialog.show();
-        PassengerRequest request = new PassengerRequest();
-        passengerKey =request.key;
-        mSocket.emit("searchDriver", request);
+        if (mSocket.connected()){
+            progressDialog.setMessage("Searching for a near by driver");
+            progressDialog.show();
+            Gson gson = new Gson();
+            mSocket.emit("request-channel", gson.toJson(getPassengerRequest()));
+        }else{
+            Toast.makeText(getApplicationContext(), "Please Connect socket", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     private Emitter.Listener onConnect = new Emitter.Listener() {
@@ -125,4 +129,24 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     };
+
+    private PassengerRequest getPassengerRequest(){
+        PassengerRequest request = new PassengerRequest();
+        request.key = "40f62535-0ab2-4ea4-88a3-5ebec394fec1";
+        request.passengerDestination = "Otigba Enugu";
+        request.passengerDestinationLat = 6.441320857992139;
+        request.passengerDestinationLong = 7.441320857992139;
+        request.passengerName = "Okoro ugochukwu";
+        request.passengerPhoneNumber = "08135323878";
+        request.passengerPickUpLat = 6.441320857992139;
+        request.passengerPickUpLong = 7.441320857992139;
+        request.passengerPaymentType = "CASH";
+        request.vehicleType = "";
+        request.passengerPickUpName = "Garden Avenue Enugu";
+        request.status = "NOT_ACCEPTED";
+        request.passengerDeviceType = "";
+        request.driverKey = "";
+        return request;
+    }
+
 }

@@ -16,4 +16,5 @@ public class PassengerRequest implements Serializable {
     public String status;
     public String passengerDeviceType;
     public String driverKey;
+    public String vehicleType;
 }
